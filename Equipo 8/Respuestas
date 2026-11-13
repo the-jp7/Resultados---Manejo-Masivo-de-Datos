@@ -1,0 +1,50 @@
+MINI EJERCICIO - PENTOMINO (Hadoop 3.4.1, MapReduce local)
+=========================================================
+
+1. ¿Qué función tiene el parámetro -depth?
+
+   Define cuántas piezas se colocan de antemano para generar los prefijos
+   de búsqueda. Cada prefijo es una decisión inicial de cómo empezar a
+   llenar el tablero, y cada uno se convierte en un registro de entrada
+   para Map. Con más profundidad hay más prefijos y cada uno trabaja sobre
+   una parte más pequeña del problema.
+
+
+2. ¿Cambió el tablero o solamente la forma de dividir la búsqueda?
+
+   Solo cambió la forma de dividir la búsqueda. El tablero siguió siendo
+   de 6 x 10 y se usaron las mismas 12 piezas. Lo que cambió fue el
+   trabajo repartido:
+
+
+
+3. ¿Cuántas soluciones se obtuvieron con profundidad 1 y profundidad 2?
+
+   Se obtuvieron 2,339 soluciones en ambos casos. Esto se comprobó con
+   "Reduce output records=2339" y contando las líneas con tabulador de
+   cada archivo part-r-00000, que dieron 2339 las dos veces.
+
+
+4. ¿Por qué ambas ejecuciones deberían encontrar la misma cantidad de
+   soluciones?
+
+   Porque el problema es el mismo. Los prefijos solo reparten el espacio
+   de búsqueda en partes: juntos cubren todas las posibilidades, sin dejar
+   ninguna fuera. Cambiar la profundidad cambia cuántas partes hay y qué
+   tan grandes son, pero no cambia el conjunto de tableros válidos. Cada
+   solución completa parte de algún prefijo, así que se encuentra con
+   cualquier profundidad.
+
+
+5. ¿Qué función cumple Map en este ejemplo?
+
+   Map hace el trabajo de búsqueda. Recibe los prefijos, explora con
+   Dancing Links todas las formas de completar el tablero a partir de cada
+   uno, y emite las soluciones completas.
+
+   En la ejecución con profundidad 2, las 4 tareas Map recibieron 20, 26,
+   24 y 23 prefijos (93 en total) y emitieron 129, 1,464, 471 y 275
+   soluciones (2,339 en total).
+
+   Reduce no acomoda piezas: solo recibe esas soluciones agrupadas y las
+   escribe en el archivo de salida.
